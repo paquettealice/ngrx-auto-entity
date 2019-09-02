@@ -3,9 +3,10 @@ import { MatSnackBar } from '@angular/material';
 import { EntityActionTypes, EntityOperators, ofEntityType } from '@briebug/ngrx-auto-entity';
 import { Actions, Effect } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
-import { Order } from 'models/order.model';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+
+import { Order } from '../models';
 import { Go } from './router/router.actions';
 
 @Injectable()

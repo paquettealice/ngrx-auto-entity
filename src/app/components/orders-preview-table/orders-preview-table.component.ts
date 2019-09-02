@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { MatTableDataSource } from '@angular/material';
-import { OrderInfo } from 'models/orderInfo';
+import { OrderInfo } from '../../models';
 
 @Component({
   selector: 'app-orders-preview-table',

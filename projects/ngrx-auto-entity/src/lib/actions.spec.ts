@@ -52,7 +52,7 @@ import {
   UpdateManySuccess,
   UpdateSuccess
 } from './actions';
-import { Key } from './decorators';
+import { Key } from './decorators/key';
 
 class TestEntity {
   @Key id: number;

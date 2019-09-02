@@ -3,15 +3,13 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { CoreModule } from 'core/core.module';
-import { StateModule } from 'state/state.module';
+import { CoreModule } from './core/core.module';
 import { MaterialModule } from './material.module';
+import { StateModule } from './state/state.module';
 
-import { Customer } from 'models/customer.model';
-import { Order } from 'models/order.model';
-import { Product } from 'models/product.model';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { Customer, Order, Product } from './models';
 
 import { CustomersListComponent } from './components/customers-list/customers-list.component';
 import { OrdersPreviewTableComponent } from './components/orders-preview-table/orders-preview-table.component';
@@ -21,6 +19,7 @@ import { NotFoundComponent } from './containers/not-found/not-found.component';
 import { OrdersPreviewComponent } from './containers/orders-preview/orders-preview.component';
 import { RecentProductsComponent } from './containers/recent-products/recent-products.component';
 import { TopCustomersComponent } from './containers/top-customers/top-customers.component';
+
 import { EntityService } from './services/entity.service';
 
 @NgModule({

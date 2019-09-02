@@ -3,11 +3,10 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 
-import { CustomerFacade } from 'facades/customer.facade';
-import { OrderFacade } from 'facades/order.facade';
-import { OrderStatus } from 'models/order.model';
-import { OrderInfo } from 'models/orderInfo';
-import { AppState } from 'state/app.state';
+import { OrderInfo, OrderStatus } from '../models';
+import { AppState } from '../state/app.state';
+import { CustomerFacade } from './customer.facade';
+import { OrderFacade } from './order.facade';
 
 @Injectable({
   providedIn: 'root'

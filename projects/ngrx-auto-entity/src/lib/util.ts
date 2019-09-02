@@ -1,6 +1,6 @@
 import { createSelector, MemoizedSelector, select, Selector, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { camelCase } from '../util/case';
+import { camelCase } from '../util/case'; // NOTE: Keep ALL imports here!!!!
 import {
   Change,
   Clear,
@@ -31,7 +31,7 @@ import {
   UpdateMany
 } from './actions';
 // NOTE: The following line MUST import:  IPage, IPageInfo, IRangeInfo, Page, Range; Required for AOT!
-import { IPage, IPageInfo, IRangeInfo, Page, Range } from './models'; // NOTE: Keep ALL imports here!!!!
+import { IPage, IPageInfo, IRangeInfo, Page, Range } from './models';
 
 /**
  * Structure for how entities are stored within the `entities` state property:

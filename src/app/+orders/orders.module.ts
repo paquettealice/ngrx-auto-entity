@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NgrxAutoEntityModule } from '@briebug/ngrx-auto-entity';
 import { StoreModule } from '@ngrx/store';
+
 import { OrderComponent } from './components/order/order.component';
 import { OrderItem } from './models/orderItem.model';
 import { routes } from './orders.routing';

@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-
-import { Order } from 'models/order.model';
 import { tap } from 'rxjs/operators';
-import { AppState } from 'state/app.state';
+
+import { Order } from '../../models';
 import { OrderItem } from '../models/orderItem.model';
 import { FeatureState } from '../state/feature.state';
 import { OrderItemFacadeBase } from '../state/orderItem.state';

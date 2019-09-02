@@ -65,6 +65,7 @@ import {
   UpdateManySuccess,
   UpdateSuccess
 } from './actions';
+import { shouldApplyEffect } from './decorators/entity';
 import { IEntityError, IEntityPageRef, IEntityRangeRef, IEntityRef, NgrxAutoEntityService } from './service';
 
 export const handleError = <TModel, TErrorAction>(
@@ -104,6 +105,7 @@ export class EntityOperators {
   load<TModel>() {
     return (source: Observable<Load<TModel>>) =>
       source.pipe(
+        shouldApplyEffect(),
         mergeMap(({ info, keys, criteria }) => {
           return this.entityService.load(info, keys, criteria).pipe(
             map((ref: IEntityRef<TModel>) => new LoadSuccess<TModel>(ref.info.modelType, ref.entity)),
@@ -118,6 +120,7 @@ export class EntityOperators {
   loadAll<TModel>() {
     return (source: Observable<LoadAll<TModel>>) =>
       source.pipe(
+        shouldApplyEffect(),
         mergeMap(({ info, criteria }) => {
           return this.entityService.loadAll(info, criteria).pipe(
             map((ref: IEntityRef<TModel[]>) => new LoadAllSuccess<TModel>(ref.info.modelType, ref.entity)),
@@ -132,6 +135,7 @@ export class EntityOperators {
   loadMany<TModel>() {
     return (source: Observable<LoadMany<TModel>>) =>
       source.pipe(
+        shouldApplyEffect(),
         mergeMap(({ info, criteria }) => {
           return this.entityService.loadMany(info, criteria).pipe(
             map((ref: IEntityRef<TModel[]>) => new LoadManySuccess<TModel>(ref.info.modelType, ref.entity)),
@@ -146,6 +150,7 @@ export class EntityOperators {
   loadPage<TModel>() {
     return (source: Observable<LoadPage<TModel>>) =>
       source.pipe(
+        shouldApplyEffect(),
         mergeMap(({ info, page, criteria }) => {
           return this.entityService.loadPage(info, page, criteria).pipe(
             map(
@@ -162,6 +167,7 @@ export class EntityOperators {
   loadRange<TModel>() {
     return (source: Observable<LoadRange<TModel>>) =>
       source.pipe(
+        shouldApplyEffect(),
         mergeMap(({ info, range, criteria }) => {
           return this.entityService.loadRange(info, range, criteria).pipe(
             map(
@@ -179,6 +185,7 @@ export class EntityOperators {
   create<TModel>() {
     return (source: Observable<Create<TModel>>) =>
       source.pipe(
+        shouldApplyEffect(),
         mergeMap(({ info, entity, criteria }) => {
           return this.entityService.create<TModel>(info, entity, criteria).pipe(
             map((ref: IEntityRef<TModel>) => new CreateSuccess<TModel>(ref.info.modelType, ref.entity)),
@@ -193,6 +200,7 @@ export class EntityOperators {
   createMany<TModel>() {
     return (source: Observable<CreateMany<TModel>>) =>
       source.pipe(
+        shouldApplyEffect(),
         mergeMap(({ info, entities, criteria }) => {
           return this.entityService.createMany<TModel>(info, entities, criteria).pipe(
             map((ref: IEntityRef<TModel[]>) => new CreateManySuccess<TModel>(ref.info.modelType, ref.entity)),
@@ -207,6 +215,7 @@ export class EntityOperators {
   update<TModel>() {
     return (source: Observable<Update<TModel>>) =>
       source.pipe(
+        shouldApplyEffect(),
         mergeMap(({ info, entity, criteria }) => {
           return this.entityService.update<TModel>(info, entity, criteria).pipe(
             map((ref: IEntityRef<TModel>) => new UpdateSuccess<TModel>(ref.info.modelType, ref.entity)),
@@ -221,6 +230,7 @@ export class EntityOperators {
   updateMany<TModel>() {
     return (source: Observable<UpdateMany<TModel>>) =>
       source.pipe(
+        shouldApplyEffect(),
         mergeMap(({ info, entities, criteria }) => {
           return this.entityService.updateMany<TModel>(info, entities, criteria).pipe(
             map((ref: IEntityRef<TModel[]>) => new UpdateManySuccess<TModel>(ref.info.modelType, ref.entity)),
@@ -235,6 +245,7 @@ export class EntityOperators {
   replace<TModel>() {
     return (source: Observable<Replace<TModel>>) =>
       source.pipe(
+        shouldApplyEffect(),
         mergeMap(({ info, entity, criteria }) => {
           return this.entityService.replace<TModel>(info, entity, criteria).pipe(
             map((ref: IEntityRef<TModel>) => new ReplaceSuccess<TModel>(ref.info.modelType, ref.entity)),
@@ -249,6 +260,7 @@ export class EntityOperators {
   replaceMany<TModel>() {
     return (source: Observable<ReplaceMany<TModel>>) =>
       source.pipe(
+        shouldApplyEffect(),
         mergeMap(({ info, entities, criteria }) => {
           return this.entityService.replaceMany<TModel>(info, entities, criteria).pipe(
             map((ref: IEntityRef<TModel[]>) => new ReplaceManySuccess<TModel>(ref.info.modelType, ref.entity)),
@@ -263,6 +275,7 @@ export class EntityOperators {
   delete<TModel>() {
     return (source: Observable<Delete<TModel>>) =>
       source.pipe(
+        shouldApplyEffect(),
         mergeMap(({ info, entity, criteria }) => {
           return this.entityService.delete(info, entity, criteria).pipe(
             map((ref: IEntityRef<TModel>) => new DeleteSuccess<TModel>(ref.info.modelType, ref.entity)),
@@ -277,6 +290,7 @@ export class EntityOperators {
   deleteMany<TModel>() {
     return (source: Observable<DeleteMany<TModel>>) =>
       source.pipe(
+        shouldApplyEffect(),
         mergeMap(({ info, entities, criteria }) => {
           return this.entityService.deleteMany<TModel>(info, entities, criteria).pipe(
             map((ref: IEntityRef<TModel[]>) => new DeleteManySuccess<TModel>(ref.info.modelType, ref.entity)),
@@ -290,17 +304,26 @@ export class EntityOperators {
 
   select<TModel>() {
     return (source: Observable<Select<TModel>>) =>
-      source.pipe(map(({ info, entity }) => new Selected<TModel>(info.modelType, entity)));
+      source.pipe(
+        shouldApplyEffect(),
+        map(({ info, entity }) => new Selected<TModel>(info.modelType, entity))
+      );
   }
 
   selectByKey<TModel>() {
     return (source: Observable<SelectByKey<TModel>>) =>
-      source.pipe(map(({ info, entityKey }) => new Selected<TModel>(info.modelType, entityKey)));
+      source.pipe(
+        shouldApplyEffect(),
+        map(({ info, entityKey }) => new Selected<TModel>(info.modelType, entityKey))
+      );
   }
 
   selectMany<TModel>() {
     return (source: Observable<SelectMany<TModel>>) =>
-      source.pipe(map(({ info, entities }) => new SelectedMany<TModel>(info.modelType, entities)));
+      source.pipe(
+        shouldApplyEffect(),
+        map(({ info, entities }) => new SelectedMany<TModel>(info.modelType, entities))
+      );
   }
 
   selectMore<TModel>() {
@@ -310,7 +333,10 @@ export class EntityOperators {
 
   selectManyByKeys<TModel>() {
     return (source: Observable<SelectManyByKeys<TModel>>) =>
-      source.pipe(map(({ info, entitiesKeys }) => new SelectedMany<TModel>(info.modelType, entitiesKeys)));
+      source.pipe(
+        shouldApplyEffect(),
+        map(({ info, entitiesKeys }) => new SelectedMany<TModel>(info.modelType, entitiesKeys))
+      );
   }
 
   selectMoreByKeys<TModel>() {
@@ -320,22 +346,34 @@ export class EntityOperators {
 
   deselect<TModel>() {
     return (source: Observable<Deselect<TModel>>) =>
-      source.pipe(map(({ info }) => new Deselected<TModel>(info.modelType)));
+      source.pipe(
+        shouldApplyEffect(),
+        map(({ info }) => new Deselected<TModel>(info.modelType))
+      );
   }
 
   deselectMany<TModel>() {
     return (source: Observable<DeselectMany<TModel>>) =>
-      source.pipe(map(({ info, entities }) => new DeselectedMany<TModel>(info.modelType, entities)));
+      source.pipe(
+        shouldApplyEffect(),
+        map(({ info, entities }) => new DeselectedMany<TModel>(info.modelType, entities))
+      );
   }
 
   deselectManyByKeys<TModel>() {
     return (source: Observable<DeselectManyByKeys<TModel>>) =>
-      source.pipe(map(({ info, entitiesKeys }) => new DeselectedMany<TModel>(info.modelType, entitiesKeys)));
+      source.pipe(
+        shouldApplyEffect(),
+        map(({ info, entitiesKeys }) => new DeselectedMany<TModel>(info.modelType, entitiesKeys))
+      );
   }
 
   deselectAll<TModel>() {
     return (source: Observable<DeselectAll<TModel>>) =>
-      source.pipe(map(({ info }) => new DeselectedMany<TModel>(info.modelType, null)));
+      source.pipe(
+        shouldApplyEffect(),
+        map(({ info }) => new DeselectedMany<TModel>(info.modelType, null))
+      );
   }
 
   edit<TModel>() {

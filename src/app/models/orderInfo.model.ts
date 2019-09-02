@@ -1,4 +1,4 @@
-import { OrderStatus } from 'models/order.model';
+import { OrderStatus } from './order.model';
 
 export class OrderInfo {
   id: number;
