@@ -12,7 +12,7 @@ import { filter, first, map, switchMap, tap } from 'rxjs/operators';
   styleUrls: ['./product.component.scss']
 })
 export class ProductComponent implements OnInit {
-  product: Observable<Product>;
+  product$: Observable<Product>;
   valid = false;
 
   private updatedProduct: Product;
@@ -20,7 +20,7 @@ export class ProductComponent implements OnInit {
   constructor(private activatedRoute: ActivatedRoute, private productFacade: ProductFacade) {}
 
   ngOnInit() {
-    this.product = this.activatedRoute.paramMap.pipe(
+    this.product$ = this.activatedRoute.paramMap.pipe(
       filter(params => params.has('id')),
       map(params => +params.get('id')),
       tap(id => {
