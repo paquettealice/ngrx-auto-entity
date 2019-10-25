@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NgrxAutoEntityModule } from '@briebug/ngrx-auto-entity';
 import { StoreModule } from '@ngrx/store';
+import { MaterialModule } from '../material.module';
 import { OrderComponent } from './components/order/order.component';
 import { OrderItem } from './models/orderItem.model';
 import { routes } from './orders.routing';
@@ -15,7 +16,8 @@ import { featureReducer } from './state/feature.reducer';
     CommonModule,
     RouterModule.forChild(routes),
     StoreModule.forFeature('orders', featureReducer),
-    NgrxAutoEntityModule.forFeature()
+    NgrxAutoEntityModule.forFeature(),
+    MaterialModule,
   ],
   providers: [{ provide: OrderItem, useClass: FeatureEntityService }]
 })

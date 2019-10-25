@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-
-import { Order } from 'models/order.model';
-import { tap } from 'rxjs/operators';
-import { AppState } from 'state/app.state';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { ProductFacade } from '../../facades/product.facade';
 import { OrderItem } from '../models/orderItem.model';
+import { IOrderItemWithProduct } from '../orders.interface';
 import { FeatureState } from '../state/feature.state';
 import { OrderItemFacadeBase } from '../state/orderItem.state';
 
@@ -12,19 +12,25 @@ import { OrderItemFacadeBase } from '../state/orderItem.state';
   providedIn: 'root'
 })
 export class OrderItemFacade extends OrderItemFacadeBase {
-  constructor(store: Store<FeatureState>) {
+  constructor(private productFacade: ProductFacade, store: Store<FeatureState>) {
     super(OrderItem, store);
   }
 
-  all() {
-    return this.all$.pipe(tap(items => console.log(items)));
+  // Selection
+  getAllForOrderId$(orderId: number): Observable<OrderItem[]> {
+    return this.all$.pipe(
+      map((orderItems: OrderItem[]) => {
+        return orderItems ? orderItems.filter((item: OrderItem) => item.orderId === +orderId) : [];
+      })
+    );
   }
 
-  loadForOrder(order: Order) {
-    return this.loadAll({ orderId: order.id });
+  // Dispatch
+  loadAllForOrderId(orderId: number): void {
+    this.loadAll({ orderId: +orderId });
   }
 
-  unload() {
+  unload(): void {
     this.clear();
   }
 }

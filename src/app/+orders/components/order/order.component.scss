@@ -1,0 +1,11 @@
+.order {
+  &__container {
+    padding: 30px;
+  }
+  &__value {
+    font-weight: bold;
+  }
+  &__item-list-container {
+    padding-left: 10px;
+  }
+}
