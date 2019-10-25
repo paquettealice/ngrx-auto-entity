@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ProductFacade } from '../../facades/product.facade';
 import { OrderItem } from '../models/orderItem.model';
-import { IOrderItemWithProduct } from '../orders.interface';
 import { FeatureState } from '../state/feature.state';
 import { OrderItemFacadeBase } from '../state/orderItem.state';
 

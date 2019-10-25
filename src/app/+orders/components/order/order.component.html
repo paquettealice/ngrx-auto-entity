@@ -1,11 +1,11 @@
 
 <div class="order__container">
-  <mat-card *ngIf="order$ | async as order">
-    <mat-card-header>Order #{{ order.id }} - {{order.status}}</mat-card-header>
+  <mat-card *ngIf="orderWithCustomer$ | async as order">
+    <mat-card-title>Order #{{ order.id }} - {{order.status}}</mat-card-title>
     <mat-card-content>
       <div>
-        <div>Order #: <span class="order__value">{{order.id}}</span></div>
-        <div>Customer #: <span class="order__value">{{order.customerId}}</span></div>
+        <div>Customer: <span class="order__value">{{order.customer?.name}}</span></div>
+        <div>Customer #<span class="order__value">{{order.customerId}}</span></div>
         <div>
           Items:
           <div class="order__item-list-container">

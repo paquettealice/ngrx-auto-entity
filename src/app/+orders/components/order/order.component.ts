@@ -1,55 +1,48 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, Subject, combineLatest } from 'rxjs';
-import { first, map, switchMap, take, takeUntil, debounceTime, filter } from 'rxjs/operators';
-import { IEntityDictionary } from '../../../../../projects/ngrx-auto-entity/src';
-import { Product } from '../../../models/product.model';
-import { OrderItemFacade } from '../../facades/orderItem.facade';
-import { OrderItem } from '../../models/orderItem.model';
-import { IOrderItemWithProduct } from '../../orders.interface';
-import { ProductFacade } from '../../../facades/product.facade';
-import { Order } from '../../../models/order.model';
-import { OrderFacade } from '../../../facades/order.facade';
+import { CustomerFacade } from 'facades/customer.facade';
+import { OrderFacade } from 'facades/order.facade';
+import { ProductFacade } from 'facades/product.facade';
+import { Order } from 'models/order.model';
+import { Observable } from 'rxjs';
+import { filter, first, map, switchMap, take } from 'rxjs/operators';
+import { OrderItemFacade } from 'src/app/+orders/facades/orderItem.facade';
+import { OrderItem } from 'src/app/+orders/models/orderItem.model';
+import { IOrderItemWithProduct, IOrderWithCustomer } from 'src/app/+orders/orders.interface';
 
 @Component({
   selector: 'app-order',
   templateUrl: './order.component.html',
   styleUrls: ['./order.component.scss']
 })
-export class OrderComponent implements OnInit, OnDestroy {
-  productsById$: Observable<IEntityDictionary<Product>>;
-
+export class OrderComponent implements OnInit {
   orderId$: Observable<number>;
   order$: Observable<Order>;
-  orderItems$: Observable<OrderItem[]>;
-  orderItemsWithProduct$: Observable<IOrderItemWithProduct[]>;
+  orderWithCustomer$: Observable<IOrderWithCustomer>;
 
-  destroy$: Subject<void> = new Subject<void>();
+  orderItemsWithProduct$: Observable<IOrderItemWithProduct[]>;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private orderFacade: OrderFacade,
     private orderItemFacade: OrderItemFacade,
-    private productFacade: ProductFacade
+    private productFacade: ProductFacade,
+    private customerFacade: CustomerFacade
   ) {
     this.initOrderId$();
     this.initOrder$();
+    this.initOrderWithCustomer$();
+
     this.initOrderItems$();
+
     this.initLoadOrderItemsForOrderId();
-
+    this.initLoadCustomerForOrder();
     this.initLoadProducts();
-    this.initProductsById$();
 
-    this.initOrderItemsWithProducts$();
     console.log('snapshot', this.activatedRoute.snapshot);
   }
 
   ngOnInit() {}
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
 
   /* Init */
   private initOrderId$() {
@@ -68,10 +61,17 @@ export class OrderComponent implements OnInit, OnDestroy {
     this.order$ = this.orderFacade.current$.pipe(filter(order => !!order));
   }
 
+  private initOrderWithCustomer$() {
+    this.orderWithCustomer$ = this.order$.pipe(
+      switchMap((order: Order) => this.customerFacade.attachByCustomerId$([order])),
+      map(([order]) => order)
+    );
+  }
+
   private initOrderItems$() {
-    this.orderItems$ = this.orderId$.pipe(
+    this.orderItemsWithProduct$ = this.orderId$.pipe(
       switchMap((orderId: number) => this.orderItemFacade.getAllForOrderId$(orderId)),
-      takeUntil(this.destroy$)
+      switchMap((items: OrderItem[]) => this.productFacade.attachByProductId$(items))
     );
   }
 
@@ -81,27 +81,13 @@ export class OrderComponent implements OnInit, OnDestroy {
     });
   }
 
+  private initLoadCustomerForOrder() {
+    this.order$.pipe(take(1)).subscribe((order: Order) => {
+      this.customerFacade.loadMany({ id: order.customerId });
+    });
+  }
+
   private initLoadProducts() {
     this.productFacade.loadAll();
-  }
-
-  private initProductsById$() {
-    this.productsById$ = this.productFacade.entities$;
-  }
-
-  private initOrderItemsWithProducts$() {
-    this.orderItemsWithProduct$ = combineLatest([this.orderItems$, this.productsById$]).pipe(
-      map(([items, productsById]: [OrderItem[], IEntityDictionary<Product>]) => {
-        if (!items || !productsById) {
-          return null;
-        }
-
-        return items.map(
-          (item: OrderItem): IOrderItemWithProduct => {
-            return { ...item, product: productsById[item.productId] };
-          }
-        );
-      })
-    );
   }
 }
