@@ -9,12 +9,29 @@ import { environment } from '../../environments/environment';
 export class EntityService implements IAutoEntityService<any> {
   constructor(private http: HttpClient) {}
 
+  static convertModelFilterToQueryString<TModel = any>(modelFilter: Partial<TModel>): string {
+    if (modelFilter) {
+      return Object.keys(modelFilter)
+        .map((key: string) => `${key}=${encodeURIComponent(modelFilter[key])}`)
+        .join('&');
+    } else {
+      return '';
+    }
+  }
+
   load(entityInfo: IEntityInfo, keys: any): Observable<any> {
     return this.http.get<any>(`${environment.API_BASE_URL}/${entityInfo.modelName.toLowerCase()}s/${keys}`);
   }
 
   loadAll(entityInfo: IEntityInfo): Observable<any[]> {
     return this.http.get<any[]>(`${environment.API_BASE_URL}/${entityInfo.modelName.toLowerCase()}s`);
+  }
+
+  loadMany<TModel = any>(entityInfo: IEntityInfo, criteria: IEntityCriteria<TModel>): Observable<TModel[]> {
+    const queryString: string = EntityService.convertModelFilterToQueryString(criteria.modelFilter);
+    return this.http.get<any[]>(
+      `${environment.API_BASE_URL}/${entityInfo.modelName.toLowerCase()}s${queryString ? '?' : ''}${queryString}`
+    );
   }
 
   create(entityInfo: IEntityInfo, entity: any): Observable<any> {
@@ -37,4 +54,8 @@ export class EntityService implements IAutoEntityService<any> {
       .delete<any>(`${environment.API_BASE_URL}/${entityInfo.modelName.toLowerCase()}s/${entity.id}`)
       .pipe(map(() => entity));
   }
+}
+
+export interface IEntityCriteria<TModel> {
+  modelFilter?: Partial<TModel>;
 }

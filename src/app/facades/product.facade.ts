@@ -1,5 +1,22 @@
 import { Injectable } from '@angular/core';
-import { IEntityDictionary } from '@briebug/ngrx-auto-entity';
+import {
+  IEntityDictionary,
+  Load,
+  LoadAll,
+  LoadAllFailure,
+  LoadAllSuccess,
+  LoadFailure,
+  LoadMany,
+  LoadManyFailure,
+  LoadManySuccess,
+  LoadPage,
+  LoadPageFailure,
+  LoadPageSuccess,
+  LoadRange,
+  LoadRangeFailure,
+  LoadRangeSuccess,
+  LoadSuccess
+} from '@briebug/ngrx-auto-entity';
 import { Store } from '@ngrx/store';
 import { Product } from 'models/product.model';
 import { combineLatest, isObservable, Observable, of } from 'rxjs';
@@ -11,6 +28,8 @@ import { ProductFacadeBase } from 'state/product.state';
   providedIn: 'root'
 })
 export class ProductFacade extends ProductFacadeBase {
+  lastLoadAction$: Observable<IEntityLoadActions<Product>>;
+
   constructor(store: Store<AppState>) {
     super(Product, store);
   }
@@ -46,3 +65,20 @@ export class ProductFacade extends ProductFacadeBase {
     );
   }
 }
+
+export type IEntityLoadActions<TModel> =
+  | Load<TModel>
+  | LoadSuccess<TModel>
+  | LoadFailure<TModel>
+  | LoadMany<TModel>
+  | LoadManySuccess<TModel>
+  | LoadManyFailure<TModel>
+  | LoadAll<TModel>
+  | LoadAllSuccess<TModel>
+  | LoadAllFailure<TModel>
+  | LoadPage<TModel>
+  | LoadPageSuccess<TModel>
+  | LoadPageFailure<TModel>
+  | LoadRange<TModel>
+  | LoadRangeSuccess<TModel>
+  | LoadRangeFailure<TModel>;

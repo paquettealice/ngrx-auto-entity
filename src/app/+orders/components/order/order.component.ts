@@ -37,9 +37,6 @@ export class OrderComponent implements OnInit {
 
     this.initLoadOrderItemsForOrderId();
     this.initLoadCustomerForOrder();
-    this.initLoadProducts();
-
-    console.log('snapshot', this.activatedRoute.snapshot);
   }
 
   ngOnInit() {}
@@ -83,11 +80,7 @@ export class OrderComponent implements OnInit {
 
   private initLoadCustomerForOrder() {
     this.order$.pipe(take(1)).subscribe((order: Order) => {
-      this.customerFacade.loadMany({ id: order.customerId });
+      this.customerFacade.loadMany({ modelFilter: { id: order.customerId } });
     });
-  }
-
-  private initLoadProducts() {
-    this.productFacade.loadAll();
   }
 }

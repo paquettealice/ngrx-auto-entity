@@ -6,6 +6,7 @@ import { combineLatest, isObservable, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AppState } from 'state/app.state';
 import { CustomerFacadeBase } from 'state/customer.state';
+import { IEntityCriteria } from 'src/app/services/entity.service';
 
 @Injectable({
   providedIn: 'root'
@@ -42,5 +43,10 @@ export class CustomerFacade extends CustomerFacadeBase {
         });
       })
     );
+  }
+
+  // Type overrides
+  loadMany(criteria: IEntityCriteria<Customer>): void {
+    super.loadMany(criteria);
   }
 }
