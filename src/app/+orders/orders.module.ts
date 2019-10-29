@@ -5,9 +5,9 @@ import { NgrxAutoEntityModule } from '@briebug/ngrx-auto-entity';
 import { StoreModule } from '@ngrx/store';
 import { MaterialModule } from '../material.module';
 import { OrderComponent } from './components/order/order.component';
-import { OrderItem } from './models/orderItem.model';
+import { OrderItem } from './models/order-item.model';
 import { routes } from './orders.routing';
-import { FeatureEntityService } from './services/FeatureEntityService';
+import { FeatureEntityService } from './services/feature-entity.service';
 import { featureReducer } from './state/feature.reducer';
 
 @NgModule({

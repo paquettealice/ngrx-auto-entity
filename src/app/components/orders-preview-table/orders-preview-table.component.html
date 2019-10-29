@@ -1,18 +1,35 @@
 <mat-table [dataSource]="dataSource">
+  <!-- Customer -->
   <ng-container matColumnDef="customer">
     <mat-header-cell *matHeaderCellDef> Customer </mat-header-cell>
     <mat-cell *matCellDef="let order">
       <a [routerLink]="['/orders', order.id]">{{order.customer}}</a>
     </mat-cell>
   </ng-container>
+  <!-- Date of order -->
   <ng-container matColumnDef="dateOfOrder">
     <mat-header-cell *matHeaderCellDef> Date of Order </mat-header-cell>
     <mat-cell *matCellDef="let order"> {{order.dateOfOrder}} </mat-cell>
   </ng-container>
+  <!-- Status -->
   <ng-container matColumnDef="status">
     <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
     <mat-cell *matCellDef="let order"> {{order.status }} </mat-cell>
   </ng-container>
-  <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
-  <mat-row *matRowDef="let order; columns: columnsToDisplay"></mat-row>
+  <!-- User actions -->
+  <ng-container matColumnDef="userActions"></ng-container>
+
+  <!-- Hidden cell/row definition -->
+  <ng-container matColumnDef="hiddenRow">
+    <mat-cell *matCellDef="let order" class="opt__hidden-cell" [@hiddenRowExpand]="order === selectedOrder ? 'expanded' : 'collapsed'">
+      <ng-content></ng-content>
+    </mat-cell>
+  </ng-container>
+  <mat-row *matRowDef="let element; columns: ['hiddenRow']" class="opt__hidden-row"></mat-row>
+
+  <!-- Row definition -->
+  <ng-container *ngIf="columnsToDisplay$ | async as columnsToDisplay">
+    <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+    <mat-row *matRowDef="let order; columns: columnsToDisplay"></mat-row>
+  </ng-container>
 </mat-table>

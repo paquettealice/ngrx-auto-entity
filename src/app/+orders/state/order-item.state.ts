@@ -1,5 +1,5 @@
 import { buildFeatureState, IEntityState } from '@briebug/ngrx-auto-entity';
-import { OrderItem } from '../models/orderItem.model';
+import { OrderItem } from '../models/order-item.model';
 import { ordersFeatureState } from './feature.state';
 
 export const { initialState, facade: OrderItemFacadeBase } = buildFeatureState(OrderItem, 'orders', ordersFeatureState);

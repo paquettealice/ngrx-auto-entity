@@ -6,8 +6,8 @@ import { ProductFacade } from 'facades/product.facade';
 import { Order } from 'models/order.model';
 import { Observable } from 'rxjs';
 import { filter, first, map, switchMap, take } from 'rxjs/operators';
-import { OrderItemFacade } from 'src/app/+orders/facades/orderItem.facade';
-import { OrderItem } from 'src/app/+orders/models/orderItem.model';
+import { OrderItemFacade } from 'src/app/+orders/facades/order-item.facade';
+import { OrderItem } from 'src/app/+orders/models/order-item.model';
 import { IOrderItemWithProduct, IOrderWithCustomer } from 'src/app/+orders/orders.interface';
 
 @Component({

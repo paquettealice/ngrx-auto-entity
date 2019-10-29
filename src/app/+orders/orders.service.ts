@@ -1,23 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
-
 import { CustomerFacade } from 'facades/customer.facade';
 import { OrderFacade } from 'facades/order.facade';
 import { OrderStatus } from 'models/order.model';
 import { OrderInfo } from 'models/orderInfo';
-import { AppState } from 'state/app.state';
+import { Observable } from 'rxjs';
+import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
-export class OrderManagerFacade {
-  constructor(
-    private store: Store<AppState>,
-    private orderFacade: OrderFacade,
-    private customerFacade: CustomerFacade
-  ) {}
+export class OrdersService {
+  constructor(private orderFacade: OrderFacade, private customerFacade: CustomerFacade) {}
 
   orderInfoByStatus$(status$: Observable<OrderStatus[]>): Observable<OrderInfo[]> {
     return status$.pipe(

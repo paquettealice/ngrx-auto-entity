@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-
 import { CustomerFacade } from 'facades/customer.facade';
 import { OrderFacade } from 'facades/order.facade';
-import { OrderManagerFacade } from 'facades/orderManager.facade';
 import { OrderStatus } from 'models/order.model';
+import { BehaviorSubject } from 'rxjs';
+import { OrdersService } from 'src/app/+orders/orders.service';
 
 const DEFAULT_STATUS = [OrderStatus.open, OrderStatus.completed];
 
@@ -16,11 +15,7 @@ const DEFAULT_STATUS = [OrderStatus.open, OrderStatus.completed];
 export class OrdersPreviewComponent {
   status$ = new BehaviorSubject(DEFAULT_STATUS);
 
-  constructor(
-    public orderManager: OrderManagerFacade,
-    private orderFacade: OrderFacade,
-    private customerFacade: CustomerFacade
-  ) {
+  constructor(public orderManager: OrdersService, orderFacade: OrderFacade, customerFacade: CustomerFacade) {
     orderFacade.loadAll();
     customerFacade.loadAll();
   }
