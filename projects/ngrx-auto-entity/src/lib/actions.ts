@@ -142,8 +142,8 @@ const setType = (actionType: string, info: IEntityInfo): string => {
  * Loads a single instance of an entity, corresponding to HTTP GET /entity/:id operation
  */
 export class Load<TModel> extends EntityAction<TModel> {
-  constructor(type: new () => TModel, public keys: any, public criteria?: any, correlationId?: string) {
-    super(type, EntityActionTypes.Load, correlationId);
+  constructor(type: new () => TModel, public keys: any, public criteria?: any) {
+    super(type, EntityActionTypes.Load);
   }
 }
 
