@@ -104,7 +104,7 @@ export class EntityOperators {
   load<TModel>() {
     return (source: Observable<Load<TModel>>) =>
       source.pipe(
-        mergeMap(({ info, criteria, keys }) => {
+        mergeMap(({ info, keys, criteria }) => {
           return this.entityService.load(info, keys, criteria).pipe(
             map((ref: IEntityRef<TModel>) => new LoadSuccess<TModel>(ref.info.modelType, ref.entity)),
             catchError((error: IEntityError<TModel>) =>
