@@ -104,9 +104,9 @@ export class EntityOperators {
   load<TModel>() {
     return (source: Observable<Load<TModel>>) =>
       source.pipe(
-        mergeMap(({ info, keys, criteria }) => {
+        mergeMap(({ info, criteria, keys, correlationId }) => {
           return this.entityService.load(info, keys, criteria).pipe(
-            map((ref: IEntityRef<TModel>) => new LoadSuccess<TModel>(ref.info.modelType, ref.entity)),
+            map((ref: IEntityRef<TModel>) => new LoadSuccess<TModel>(ref.info.modelType, ref.entity, correlationId)),
             catchError((error: IEntityError<TModel>) =>
               handleError(error, new LoadFailure<TModel>(error.info.modelType, error.err))
             )
@@ -118,9 +118,11 @@ export class EntityOperators {
   loadAll<TModel>() {
     return (source: Observable<LoadAll<TModel>>) =>
       source.pipe(
-        mergeMap(({ info, criteria }) => {
+        mergeMap(({ info, criteria, correlationId }) => {
           return this.entityService.loadAll(info, criteria).pipe(
-            map((ref: IEntityRef<TModel[]>) => new LoadAllSuccess<TModel>(ref.info.modelType, ref.entity)),
+            map(
+              (ref: IEntityRef<TModel[]>) => new LoadAllSuccess<TModel>(ref.info.modelType, ref.entity, correlationId)
+            ),
             catchError((error: IEntityError<TModel>) =>
               handleError(error, new LoadAllFailure<TModel>(error.info.modelType, error.err))
             )

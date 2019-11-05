@@ -6,6 +6,7 @@ import { pascalCase } from '../util/case';
 import { checkKeyName } from './decorators';
 import { IPageInfo, IRangeInfo, Page, Range } from './models';
 import { EntityIdentity } from './util';
+import uuid from 'uuidv4';
 
 export enum EntityActionTypes {
   Load = '[Entity] (Generic) Load',
@@ -99,7 +100,11 @@ export interface IEntityInfo {
 
 export type TNew<TModel> = new () => TModel;
 
-export interface IEntityAction extends Action {
+export interface ITrackableAction {
+  correlationId: string;
+}
+
+export interface IEntityAction extends Action, ITrackableAction {
   actionType: string;
   info: IEntityInfo;
 }
@@ -111,7 +116,7 @@ export abstract class EntityAction<TModel> implements IEntityAction {
   type: string;
   info: IEntityInfo;
 
-  protected constructor(type: TNew<TModel>, public actionType: string) {
+  protected constructor(type: TNew<TModel>, public actionType: string, public correlationId: string = uuid()) {
     this.info = setInfo(type);
     this.type = setType(this.actionType, this.info);
   }
@@ -137,14 +142,14 @@ const setType = (actionType: string, info: IEntityInfo): string => {
  * Loads a single instance of an entity, corresponding to HTTP GET /entity/:id operation
  */
 export class Load<TModel> extends EntityAction<TModel> {
-  constructor(type: new () => TModel, public keys: any, public criteria?: any) {
-    super(type, EntityActionTypes.Load);
+  constructor(type: new () => TModel, public keys: any, public criteria?: any, correlationId?: string) {
+    super(type, EntityActionTypes.Load, correlationId);
   }
 }
 
 export class LoadSuccess<TModel> extends EntityAction<TModel> {
-  constructor(type: new () => TModel, public entity: TModel) {
-    super(type, EntityActionTypes.LoadSuccess);
+  constructor(type: new () => TModel, public entity: TModel, correlationId?: string) {
+    super(type, EntityActionTypes.LoadSuccess, correlationId);
   }
 }
 
@@ -179,14 +184,14 @@ export class LoadManyFailure<TModel> extends EntityAction<TModel> {
  * Loads all instance of an entity (replacing existing state), corresponding to HTTP GET /entity operation
  */
 export class LoadAll<TModel> extends EntityAction<TModel> {
-  constructor(type: new () => TModel, public criteria?: any) {
-    super(type, EntityActionTypes.LoadAll);
+  constructor(type: new () => TModel, public criteria?: any, correlationId?: string) {
+    super(type, EntityActionTypes.LoadAll, correlationId);
   }
 }
 
 export class LoadAllSuccess<TModel> extends EntityAction<TModel> {
-  constructor(type: new () => TModel, public entities: TModel[]) {
-    super(type, EntityActionTypes.LoadAllSuccess);
+  constructor(type: new () => TModel, public entities: TModel[], correlationId?: string) {
+    super(type, EntityActionTypes.LoadAllSuccess, correlationId);
   }
 }
 
