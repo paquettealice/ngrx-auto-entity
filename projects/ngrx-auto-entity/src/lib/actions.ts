@@ -100,11 +100,11 @@ export interface IEntityInfo {
 
 export type TNew<TModel> = new () => TModel;
 
-export interface ITrackableAction {
+export interface ICorrelatedAction {
   correlationId: string;
 }
 
-export interface IEntityAction extends Action, ITrackableAction {
+export interface IEntityAction extends Action, ICorrelatedAction {
   actionType: string;
   info: IEntityInfo;
 }
