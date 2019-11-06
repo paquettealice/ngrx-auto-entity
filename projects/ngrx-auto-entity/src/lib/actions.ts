@@ -196,8 +196,8 @@ export class LoadAllSuccess<TModel> extends EntityAction<TModel> {
 }
 
 export class LoadAllFailure<TModel> extends EntityAction<TModel> {
-  constructor(type: new () => TModel, public error: any) {
-    super(type, EntityActionTypes.LoadAllFailure);
+  constructor(type: new () => TModel, public error: any, correlationId?: string) {
+    super(type, EntityActionTypes.LoadAllFailure, correlationId);
   }
 }
 
