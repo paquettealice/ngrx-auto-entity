@@ -148,8 +148,8 @@ export class Load<TModel> extends EntityAction<TModel> {
 }
 
 export class LoadSuccess<TModel> extends EntityAction<TModel> {
-  constructor(type: new () => TModel, public entity: TModel, correlationId?: string) {
-    super(type, EntityActionTypes.LoadSuccess, correlationId);
+  constructor(type: new () => TModel, public entity: TModel) {
+    super(type, EntityActionTypes.LoadSuccess);
   }
 }
 
