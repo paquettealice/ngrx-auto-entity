@@ -20,6 +20,7 @@ import {
 import { IOrderFormItem, IOrderFormValue } from 'src/app/+orders/exports/order-form/order-form.component';
 import { OrderInfo } from 'src/app/+orders/models/order-info.model';
 import { AppState } from 'state/app.state';
+import { createFullOrder } from 'state/order.state';
 
 @Injectable({
   providedIn: 'root'
@@ -104,6 +105,8 @@ export class OrderManagerService {
     const newAccount$ = !order.accountId
       ? createAndFetch$(this.accountFacade, AccountFacade.getNewPersonalTab(order.customerId))
       : of(null);
+
+    this.store.dispatch(createFullOrder({ order, orderItems: [] }))
 
     // Order
     newAccount$.pipe(take(1)).subscribe((newAccount: Account | null) => {
