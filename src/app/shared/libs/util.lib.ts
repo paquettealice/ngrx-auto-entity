@@ -1,4 +1,6 @@
-export function omitByKeys<T = any, K extends keyof T = any>(collection: T, keys: K[]): Exclude<T, K> {
+import { Omit } from 'shared/types/util.type';
+
+export function omitByKeys<T = any, K extends keyof T = any>(collection: T, keys: K[]): Omit<T, K> {
   const _keys = [...keys];
   let index: number;
 

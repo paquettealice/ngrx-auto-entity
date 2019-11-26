@@ -1,7 +1,8 @@
-import { TypedAction, ActionCreator } from '@ngrx/store/src/models';
+import { ActionCreator, TypedAction } from '@ngrx/store/src/models';
 import { ICorrelatedAction } from 'dist/ngrx-auto-entity/lib/actions';
 import uuidv4 from 'uuidv4';
 
+// TODO: Find a way to integrate NgRx's createAction function into this
 export function createCorrelatedAction<T extends string, P extends object>(
   type: T,
   config: { _as: "props"; _p: P; }

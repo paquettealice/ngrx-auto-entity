@@ -6,12 +6,10 @@ import { CustomerFacade } from 'facades/customer.facade';
 import { OrderItemFacade } from 'facades/order-item.facade';
 import { OrderFacade } from 'facades/order.facade';
 import { ProductFacade } from 'facades/product.facade';
-import { Account } from 'models/account.model';
 import { OrderItem } from 'models/order-item.model';
 import { Order, OrderStatus } from 'models/order.model';
-import { combineLatest, Observable, of, ReplaySubject } from 'rxjs';
-import { map, switchMap, take } from 'rxjs/operators';
-import { createAndFetch$ } from 'shared/libs/facade.lib';
+import { combineLatest, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { omitByKeys } from 'shared/libs/util.lib';
 import {
   IOrderFormDialogData,
@@ -20,7 +18,7 @@ import {
 import { IOrderFormItem, IOrderFormValue } from 'src/app/+orders/exports/order-form/order-form.component';
 import { OrderInfo } from 'src/app/+orders/models/order-info.model';
 import { AppState } from 'state/app.state';
-import { createFullOrder } from 'state/order.state';
+import { upsertFullOrder } from 'state/order.state';
 
 @Injectable({
   providedIn: 'root'
@@ -101,48 +99,47 @@ export class OrderManagerService {
       dateOfOrder: formValue.dateOfOrder || new Date().toISOString(),
       status: formValue.status || OrderStatus.pending // Should this be open instead of pending?
     };
-    const newOrCurrentOrder$ = new ReplaySubject<Order>(1);
-    const newAccount$ = !order.accountId
-      ? createAndFetch$(this.accountFacade, AccountFacade.getNewPersonalTab(order.customerId))
-      : of(null);
 
-    this.store.dispatch(createFullOrder({ order, orderItems: [] }))
+    // Full Order Upsert
+    this.store.dispatch(
+      upsertFullOrder({
+        order,
+        orderItems: formValue.items
+          .filter(item => !item.toDelete)
+          .map((item: IOrderFormItem) => {
+            return { ...omitByKeys(item, ['toDelete']) };
+          })
+      })
+    );
 
-    // Order
-    newAccount$.pipe(take(1)).subscribe((newAccount: Account | null) => {
-      order.accountId = order.accountId || newAccount.id;
-      if (order.id) {
-        this.orderFacade.update(order);
-        newOrCurrentOrder$.next(order);
-      } else {
-        createAndFetch$(this.orderFacade, order)
-          .pipe(take(1))
-          .subscribe(newOrCurrentOrder$);
-      }
-    });
-
-    // Order items
-    newOrCurrentOrder$.pipe(take(1)).subscribe((newOrder: Order) => {
-      let orderItem: OrderItem;
-      formValue.items.forEach((item: IOrderFormItem) => {
-        if (item.id) {
-          orderItem = { ...omitByKeys(item, ['toDelete']), orderId: formValue.id };
-          if (item.toDelete) {
-            this.orderItemFacade.delete({ ...orderItem });
-          } else {
-            this.orderItemFacade.update({ ...orderItem });
-          }
-        } else {
-          orderItem = {
-            ...omitByKeys(item, ['toDelete']),
-            orderId: newOrder.id,
-            id: `${newOrder.id}_${item.productId}`
-          };
-          this.orderItemFacade.create({ ...orderItem });
-        }
-
-        newOrCurrentOrder$.complete();
+    // Order Item Delete
+    let orderItem: OrderItem;
+    formValue.items
+      .filter(item => item.toDelete)
+      .forEach((item: IOrderFormItem) => {
+        orderItem = { ...omitByKeys(item, ['toDelete']), orderId: order.id };
+        this.orderItemFacade.delete({ ...orderItem });
       });
+  }
+
+  saveOrderFormItemsToDatabase(orderId: number, orderItems: IOrderFormItem[]) {
+    let orderItem: OrderItem;
+    orderItems.forEach((item: IOrderFormItem) => {
+      if (item.id) {
+        orderItem = { ...omitByKeys(item, ['toDelete']), orderId };
+        if (item.toDelete) {
+          this.orderItemFacade.delete({ ...orderItem });
+        } else {
+          this.orderItemFacade.update({ ...orderItem });
+        }
+      } else {
+        orderItem = {
+          ...omitByKeys(item, ['toDelete']),
+          orderId,
+          id: `${orderId}_${item.productId}`
+        };
+        this.orderItemFacade.create({ ...orderItem });
+      }
     });
   }
 }
