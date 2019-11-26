@@ -1,52 +1,69 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { Create, CreateSuccess, EntityActionTypes, EntityOperators, ofEntityType, Update, UpdateSuccess } from '@briebug/ngrx-auto-entity';
-import { Actions, createEffect, Effect, ofType } from '@ngrx/effects';
+import {
+  Create,
+  CreateSuccess,
+  EntityActionTypes,
+  EntityOperators,
+  ofEntityType,
+  Update,
+  UpdateSuccess
+} from '@briebug/ngrx-auto-entity';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { AccountFacade } from 'facades/account.facade';
 import { Account } from 'models/account.model';
 import { OrderItem } from 'models/order-item.model';
 import { Order } from 'models/order.model';
 import { Observable, of } from 'rxjs';
-import { filter, map, mergeMap, take, tap, switchMapTo, switchMap } from 'rxjs/operators';
+import { filter, map, mergeMap, take, tap } from 'rxjs/operators';
 import { PartialPick } from 'shared/types/util.type';
 import { AppState } from 'state/app.state';
 import { upsertFullOrder } from 'state/order.state';
 
 @Injectable()
 export class OrderEffects {
-  @Effect({ dispatch: false })
-  createSuccess$: Observable<Action> = this.actions$.pipe(
-    ofEntityType(Order, EntityActionTypes.CreateSuccess),
-    tap(() => this.matSnackBar.open('Order Created', 'Success', { duration: 2000 }))
+  createSuccess$: Observable<Action> = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofEntityType(Order, EntityActionTypes.CreateSuccess),
+        tap(() => this.matSnackBar.open('Order Created', 'Success', { duration: 2000 }))
+      ),
+    { dispatch: false }
   );
 
-  @Effect({ dispatch: false })
-  deleteSuccessSnackBar$ = this.actions$.pipe(
-    ofEntityType(Order, EntityActionTypes.DeleteSuccess),
-    tap(() => this.matSnackBar.open('Order Deleted', 'Success', { duration: 2000 }))
+  deleteSuccessSnackBar$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofEntityType(Order, EntityActionTypes.DeleteSuccess),
+        tap(() => this.matSnackBar.open('Order Deleted', 'Success', { duration: 2000 }))
+      ),
+    { dispatch: false }
   );
 
-  @Effect({ dispatch: false })
-  updateSuccessSnackBar$ = this.actions$.pipe(
-    ofEntityType(Order, EntityActionTypes.UpdateSuccess),
-    tap(() => this.matSnackBar.open('Order Updated', 'Success', { duration: 2000 }))
+  updateSuccessSnackBar$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofEntityType(Order, EntityActionTypes.UpdateSuccess),
+        tap(() => this.matSnackBar.open('Order Updated', 'Success', { duration: 2000 }))
+      ),
+    { dispatch: false }
   );
 
   upsertFullOrder$ = createEffect(
     () => {
       return this.actions$.pipe(
         ofType(upsertFullOrder),
+        // Create account if needed
         mergeMap(({ order, orderItems, correlationId }) => {
-          console.log('upsert', order);
-          if (!order.accountId) {
-            this.store.dispatch(new Create(Account, AccountFacade.getNewPersonalTab(order.customerId)));
-            return of().pipe(
-              tap(() => {
-                console.log('dispatched account create');
-                // this.store.dispatch(new Create(Account, AccountFacade.getNewPersonalTab(order.customerId)));
-              }),
-              switchMapTo(this.actions$),
+          if (order.accountId) {
+            return of({ order, orderItems, correlationId });
+          } else {
+            this.store.dispatch(
+              new Create(Account, AccountFacade.getNewPersonalTab(order.customerId), undefined, correlationId)
+            );
+
+            return this.actions$.pipe(
               ofEntityType(Account, EntityActionTypes.CreateSuccess),
               filter((success: CreateSuccess<Account>) => correlationId === success.correlationId),
               take(1),
@@ -56,10 +73,9 @@ export class OrderEffects {
                 correlationId
               }))
             );
-          } else {
-            return of({ order, orderItems, correlationId });
           }
         }),
+        // Create/update order
         tap(({ order, correlationId }) => {
           if (order.id) {
             this.store.dispatch(new Update(Order, order, undefined, correlationId));
@@ -67,6 +83,7 @@ export class OrderEffects {
             this.store.dispatch(new Create(Order, order, undefined, correlationId));
           }
         }),
+        // Create/update orderItems
         mergeMap(({ orderItems, correlationId }) => {
           return this.actions$.pipe(
             ofEntityType(Order, EntityActionTypes.CreateSuccess, EntityActionTypes.UpdateSuccess),

@@ -809,6 +809,8 @@ export function ofEntityType<TModel, T extends EntityAction<TModel>>(
   ...allowedActionTypes: EntityActionTypes[]
 ): OperatorFunction<Action, T> {
   return filter((action: EntityAction<TModel>): action is T => {
+    // console.log('ofEntityType action', JSON.stringify(action, undefined, 2), 'setType');
+    // allowedActionTypes.forEach(type => console.log('setType', setType(type, action.info), '===', action.type));
     return isEntityActionInstance(action)
       ? action.info.modelType === entity && allowedActionTypes.some(type => setType(type, action.info) === action.type)
       : false;

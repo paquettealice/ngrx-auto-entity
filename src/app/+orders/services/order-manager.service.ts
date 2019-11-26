@@ -45,6 +45,7 @@ export class OrderManagerService {
           this.productFacade.entities$
         ]).pipe(
           map(([orders, customersById, orderItems, productsById]) => {
+            // TODO: Sort out all this stuff for better readability
             return orders
               .map(order => ({
                 order,
@@ -120,26 +121,5 @@ export class OrderManagerService {
         orderItem = { ...omitByKeys(item, ['toDelete']), orderId: order.id };
         this.orderItemFacade.delete({ ...orderItem });
       });
-  }
-
-  saveOrderFormItemsToDatabase(orderId: number, orderItems: IOrderFormItem[]) {
-    let orderItem: OrderItem;
-    orderItems.forEach((item: IOrderFormItem) => {
-      if (item.id) {
-        orderItem = { ...omitByKeys(item, ['toDelete']), orderId };
-        if (item.toDelete) {
-          this.orderItemFacade.delete({ ...orderItem });
-        } else {
-          this.orderItemFacade.update({ ...orderItem });
-        }
-      } else {
-        orderItem = {
-          ...omitByKeys(item, ['toDelete']),
-          orderId,
-          id: `${orderId}_${item.productId}`
-        };
-        this.orderItemFacade.create({ ...orderItem });
-      }
-    });
   }
 }
