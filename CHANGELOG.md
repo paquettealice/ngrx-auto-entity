@@ -7,7 +7,7 @@ Correlated actions are usually sets of request/success/failure actions, such as 
 
 ### Features
 
-- **correlatedAction:** Add `correlationId` property to `EntityAction` for tracking correlated actions.
+- **correlated actions:** Add `correlationId` property to `EntityAction` for tracking correlated actions.
 
 ### Package
 
