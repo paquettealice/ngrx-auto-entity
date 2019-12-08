@@ -1,5 +1,5 @@
+import { ICorrelatedAction } from '@briebug/ngrx-auto-entity';
 import { ActionCreator, TypedAction } from '@ngrx/store/src/models';
-import { ICorrelatedAction } from 'dist/ngrx-auto-entity/lib/actions';
 import uuidv4 from 'uuidv4';
 
 // TODO: Find a way to integrate NgRx's createAction function into this
